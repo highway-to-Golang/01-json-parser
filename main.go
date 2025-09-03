@@ -18,7 +18,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	data, _ := os.ReadFile(*filename)
+	data, err := os.ReadFile(*filename)
+	if err != nil {
+		fmt.Printf("Error reading file: %v\n", err)
+		os.Exit(1)
+	}
+
 	var jsonData map[string]interface{}
 	json.Unmarshal(data, &jsonData)
 
@@ -27,7 +32,11 @@ func main() {
 
 	for {
 		fmt.Print("> ")
-		key, _ := reader.ReadString('\n')
+		key, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Printf("Error reading input: %v\n", err)
+			continue
+		}
 		key = strings.TrimSpace(key)
 
 		if key == "" {
