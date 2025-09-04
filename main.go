@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"flag"
-	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 )
@@ -14,27 +14,31 @@ func main() {
 	flag.Parse()
 
 	if *filename == "" {
-		fmt.Println("Usage: json-parser -file <filename>")
+		slog.Info("Usage: json-parser -file <filename>")
 		os.Exit(1)
 	}
 
 	data, err := os.ReadFile(*filename)
 	if err != nil {
-		fmt.Printf("Error reading file: %v\n", err)
+		slog.Error("Error reading file", "error", err)
 		os.Exit(1)
 	}
 
-	var jsonData map[string]interface{}
-	json.Unmarshal(data, &jsonData)
+	var jsonData = make(map[string]any)
+
+	err = json.Unmarshal(data, &jsonData)
+	if err != nil {
+		slog.Error("Error parsing JSON", "error", err)
+		os.Exit(1)
+	}
 
 	reader := bufio.NewReader(os.Stdin)
-	fmt.Println("Enter keys (one per line, empty line to exit):")
+	slog.Info("Enter keys (one per line, empty line to exit):")
 
 	for {
-		fmt.Print("> ")
 		key, err := reader.ReadString('\n')
 		if err != nil {
-			fmt.Printf("Error reading input: %v\n", err)
+			slog.Error("Error reading input", "error", err)
 			continue
 		}
 		key = strings.TrimSpace(key)
@@ -43,10 +47,10 @@ func main() {
 			break
 		}
 
-		if value, exists := jsonData[key]; exists {
-			fmt.Printf("%s: %v\n", key, value)
+		if value, ok := jsonData[key]; ok {
+			slog.Info("Key found", "key", key, "value", value)
 		} else {
-			fmt.Printf("Key '%s' not found\n", key)
+			slog.Warn("Key not found", "key", key)
 		}
 	}
 }
