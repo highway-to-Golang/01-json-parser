@@ -1,0 +1,21 @@
+{
+  "name": "John Doe",
+  "age": 30,
+  "email": "john@example.com",
+  "active": true,
+  "skills": ["Go", "Python", "JavaScript"],
+  "address": {
+    "city": "New York",
+    "country": "USA"
+  },
+  "projects": [
+    {
+      "name": "Project A",
+      "status": "completed"
+    },
+    {
+      "name": "Project B", 
+      "status": "in progress"
+    }
+  ]
+}
